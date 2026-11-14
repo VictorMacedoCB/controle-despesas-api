@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: despesas-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: victor
+      POSTGRES_PASSWORD: senha_dev
+      POSTGRES_DB: controle_despesas
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
