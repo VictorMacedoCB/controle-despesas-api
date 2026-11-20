@@ -1,70 +1,51 @@
 import { type Request,  type Response } from "express";
 import { atualizarDespesa, cadastrarDespesa, deletarDespesa, listarDespesas } from "../services/despesas.service.js";
+import { atualizarDespesaSchema, cadastrarDespesaSchema, idSchema } from "../schemas/despesas.schema.js";
 
 export const listarDespesasController = async (req: Request, res: Response) => {
-    try {
         const resultado = await listarDespesas()
-        res.status(200).json({ resultado })
-    } catch (error) {
-        res.status(500).json({ message: "Erro interno do servidor" })
-        console.error(error)
-    }
+        return res.status(200).json({ resultado })
 }
 
 export const novaDespesa = async (req: Request, res: Response) =>{
-    try {
-        const despesa = req.body
-        if (!despesa.categoria || (!despesa.valor || typeof despesa.valor !== 'number' || despesa.valor <= 0) || !despesa.descricao || despesa.categoria.trim() === '' || despesa.descricao.trim() === '') {
-            return res.status(400).json({
-                message: "Dados inválidos"
-            })
-        }
-        const resultado = await cadastrarDespesa(despesa)
-        res.status(201).json({ resultado })
-    } catch (error) {
-        res.status(500).json({message: "Erro interno do servidor"})
-        console.error(error)
-    } 
+        const resultado = cadastrarDespesaSchema.safeParse(req.body)
+        if(!resultado.success) return res.status(400).json({ message: "Dados inválidos" })
+
+        const resultData = await cadastrarDespesa(resultado.data)
+        return res.status(201).json({ resultData })
 } 
 
 export const deletarDespesaController = async (req : Request, res : Response) => {
-    try {
         const despesa = req.params.id
         if (!despesa) return res.status(404).json({message: "Despesa nao encontrada"})
-        const resultado = await deletarDespesa(despesa as string)
+
+        const validacaoId = idSchema.safeParse(despesa)
+        if(!validacaoId.success) {
+            return res.status(400).json("ID inválido")
+        }
+
+        const resultado = await deletarDespesa(validacaoId.data)
         if(!resultado) return res.status(404).json({message: "Despesa nao encontrada"})
-        res.status(200).json({ message: 'Despesa excluida com sucesso'})
-    } catch (error) {
-        res.status(500).json({message: "Erro interno do servidor"})
-        console.error(error)
-    }
+        return res.status(200).json({ message: 'Despesa excluida com sucesso'})
 }
 
 export const atualizarDespesaController = async (req: Request, res: Response) => {
-    try {
-        const despesa = req.body
-        const despesaId = req.params.id
-        if(!despesaId) return res.status(400).json({message: "Despesa nao encontrada"})
-        if(Object.keys(despesa).length <= 0) return res.status(400).json({message: "Dados ausentes"})
-        if(
-            despesa.descricao !== undefined && (typeof despesa.descricao !== 'string' || despesa.descricao.trim() === '') || 
-            despesa.categoria !== undefined && (typeof despesa.categoria !== 'string' || despesa.categoria.trim() === '') || 
-            despesa.valor !== undefined && (typeof despesa.valor !== 'number' || despesa.valor <= 0) 
-            ){
-            return res.status(400).json({
-                message: "Dados inválidos"
-            })
-        }
-        if (typeof despesaId !== 'string') {
-            return res.status(400).json({
-            message: "ID inválido"
-            })
-        }
-        const resultado = await atualizarDespesa(despesaId, despesa)
-        if(!resultado) res.status(400).json("Despesa nao encontrada")
-        res.status(200).json({message: 'Despesa atualizada'})
-    } catch (error) {
-        res.status(500).json({message: "Erro interno do servidor"})
-        console.error(error)
-    }
+        const resultado = atualizarDespesaSchema.safeParse(req.body)
+        const resultId = req.params.id
+
+        if(typeof resultId !== 'string') {
+            return res.status(400).json("ID inválido") 
+        } 
+        const validacaoId  = idSchema.safeParse(resultId)
+        if(!resultado.success) {
+            return res.status(400).json("Dados invalidos")
+        } 
+        if(!validacaoId.success) {
+            return res.status(400).json("ID inválido")
+        } 
+        const resultData = await atualizarDespesa(validacaoId.data, resultado.data)
+        if(resultData === false) {
+            return res.status(404).json("Despesa não encontrada")
+        } 
+        return res.status(200).json({ message: 'Despesa atualizada' })
 }

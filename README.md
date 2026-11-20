@@ -1,22 +1,23 @@
-# Controle de Despesas API
+# **Controle de Despesas API**
 
 API REST para gerenciamento de despesas pessoais, desenvolvida com Node.js, TypeScript e PostgreSQL.
 
-O projeto tem como objetivo praticar desenvolvimento backend, construção de APIs REST, integração com banco de dados e organização de código em camadas.
+O projeto tem como objetivo praticar desenvolvimento backend, construção de APIs REST, integração com banco de dados, validação de dados e organização de código em camadas.
 
-**Status:** CRUD implementado. Projeto em evolução.
+**Status:** CRUD implementado, validação com Zod e tratamento global de erros. Projeto em evolução.
 
-## Tecnologias utilizadas
+## **Tecnologias utilizadas**
 
 - **Node.js** — ambiente de execução.
 - **TypeScript** — tipagem estática.
-- **Express** — construção da API REST.
+- **Express 5** — construção da API REST e tratamento de erros assíncronos.
 - **PostgreSQL 17** — banco de dados relacional.
 - **Docker Compose** — execução do banco de dados em container.
 - **node-postgres (pg)** — conexão e consultas SQL.
-- **Insomnia** — testes das requisições HTTP.
+- **Zod** — validação e inferência de tipos dos dados.
+- **Insomnia** — testes manuais das requisições HTTP.
 
-## Arquitetura
+## **Arquitetura**
 
 O projeto utiliza uma organização em camadas para separar as responsabilidades da aplicação:
 
@@ -26,10 +27,14 @@ src/
 │   └── despesas.controller.ts
 ├── database/
 │   └── connection.ts
+├── middlewares/
+│   └── error.middleware.ts
 ├── repositories/
 │   └── despesas.repository.ts
 ├── routes/
 │   └── despesas.routes.ts
+├── schemas/
+│   └── despesas.schema.ts
 ├── services/
 │   └── despesas.service.ts
 ├── despesas.ts
@@ -46,8 +51,10 @@ Routes → Controller → Service → Repository → PostgreSQL
 - **Controllers:** recebem as requisições, validam os dados de entrada e retornam respostas HTTP.
 - **Services:** concentram a lógica de aplicação.
 - **Repositories:** executam as operações no banco de dados.
+- **Schemas:** definem as regras de validação utilizando Zod.
+- **Middlewares:** executam funções intermediárias, incluindo o tratamento global de erros.
 
-## Funcionalidades implementadas
+## **Funcionalidades implementadas**
 
 | Método | Endpoint | Descrição | Status |
 |---|---|---|---|
@@ -56,7 +63,16 @@ Routes → Controller → Service → Repository → PostgreSQL
 | PATCH | `/despesas/:id` | Atualiza parcialmente uma despesa | Implementado |
 | DELETE | `/despesas/:id` | Exclui uma despesa pelo ID | Implementado |
 
-## Como executar o projeto
+### **Validação e tratamento de erros**
+
+- Validação dos dados de entrada utilizando Zod.
+- Validação do formato UUID dos identificadores.
+- Validação de campos obrigatórios, tipos e valores positivos.
+- Atualização parcial com validação dos campos enviados.
+- Middleware global para tratamento de erros inesperados.
+- Encaminhamento automático de erros assíncronos pelo Express 5.
+
+## **Como executar o projeto**
 
 ### 1. Pré-requisitos
 
@@ -112,7 +128,7 @@ A API estará disponível em:
 http://localhost:3000
 ```
 
-## Estrutura do banco de dados
+## **Estrutura do banco de dados**
 
 Atualmente, o projeto utiliza uma tabela chamada `despesas`.
 
@@ -126,7 +142,7 @@ CREATE TABLE despesas (
 );
 ```
 
-## Exemplos de requisições
+## **Exemplos de requisições**
 
 ### Cadastrar despesa
 
@@ -180,11 +196,13 @@ Exemplo:
 DELETE /despesas/uuid-da-despesa
 ```
 
-## Próximos passos
+## **Próximos passos**
 
-- [ ] Melhorar a validação dos dados recebidos com Zod.
-- [ ] Implementar tratamento global de erros.
-- [ ] Melhorar a validação de UUID.
+- [x] Implementar CRUD completo.
+- [x] Integrar PostgreSQL com node-postgres.
+- [x] Implementar validação de dados com Zod.
+- [x] Implementar validação de UUID.
+- [x] Implementar tratamento global de erros.
 - [ ] Implementar testes automatizados com Vitest.
 - [ ] Documentar a API com OpenAPI/Swagger.
 - [ ] Criar instruções para agentes de IA com AGENTS.md.
@@ -194,7 +212,7 @@ DELETE /despesas/uuid-da-despesa
 - [ ] Desenvolver uma interface com React.
 - [ ] Avaliar a implementação de ORM com Drizzle.
 
-## Objetivo do projeto
+## **Objetivo do projeto**
 
 Este projeto faz parte do meu processo de aprendizado em desenvolvimento backend, com foco em TypeScript, Node.js, APIs REST, SQL e arquitetura em camadas.
 

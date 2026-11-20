@@ -1,15 +1,12 @@
-import type { AtualizarDespesa, Despesa, NovaDespesa } from "../despesas.js";
+import type { AtualizarDespesa, Despesa, CadastrarDespesa } from "../despesas.js";
 import { atualizar, criar, deletar, listar } from "../repositories/despesas.repository.js";
 
-
-export const cadastrarDespesa = async  (novaDespesa : NovaDespesa) : Promise<Despesa> =>{
-    const resultado = await criar(novaDespesa)
-    return resultado
+export const cadastrarDespesa = async  (novaDespesa : CadastrarDespesa) : Promise<Despesa> =>{
+    return await criar(novaDespesa)
 } 
 
 export const listarDespesas = async () : Promise<Despesa[]> => {
-    const resultado = await listar()
-    return resultado
+    return await listar()
 }
 
 export const deletarDespesa = async (id: string) : Promise<boolean> => {

@@ -1,8 +1,8 @@
 import { pool } from "../database/connection.js";
-import type { AtualizarDespesa, Despesa, NovaDespesa } from "../despesas.js";
+import type { AtualizarDespesa, Despesa, CadastrarDespesa } from "../despesas.js";
 
 
-export async function criar(despesa: NovaDespesa) : Promise<Despesa> {
+export async function criar(despesa: CadastrarDespesa) : Promise<Despesa> {
     const client = await pool.connect()
     try {
         const result =  await client.query<Despesa>(
